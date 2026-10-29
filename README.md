@@ -41,7 +41,7 @@ Load a ROM, select a song and have fun with the playback buttons.
 
 If you are Windows user you can obtain the latest version on the [Releases page](https://github.com/ipatix/agbplay/releases).
 Mac and Linux users currently have to compile on their own.
-See the section below for details.
+See the section below for details (including instructions for macOS on Apple Silicon).
 
 ### Playlist / Songlist
 
@@ -163,19 +163,57 @@ cmake --build build
 Do not use the pure debug build unless you're debugging.
 Performance may be really bad with the high quality resamplers.
 
+### macOS (Apple Silicon)
+
+Building natively on Apple Silicon (arm64) Macs is supported.
+The AVX2 optimized resamplers are x86 only and are automatically left out of the build, so the portable resampler implementations are used instead.
+
+1. Install the Xcode Command Line Tools (provides `clang`, `git` and the macOS SDK):
+
+   ```bash
+   xcode-select --install
+   ```
+
+2. Install [Homebrew](https://brew.sh) and the required packages:
+
+   ```bash
+   brew install cmake pkgconf argparse fmt nlohmann-json boost libzip libsndfile portaudio qtbase
+   ```
+
+   `zlib` and `ncurses` are provided by macOS and don't need to be installed.
+   `argparse` is optional, CMake fetches it from GitHub if it isn't installed.
+
+3. Configure and build:
+
+   ```bash
+   cmake -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo
+   cmake --build build -j$(sysctl -n hw.ncpu)
+   ```
+
+4. Run the program you want:
+
+   ```bash
+   ./build/src/agbplay-gui/agbplay-gui   # Qt GUI
+   ./build/src/agbplay-cli/agbplay-cli   # command line tool
+   ./build/src/agbplay-nc/agbplay-nc     # legacy curses UI
+   ```
+
+Profiles and settings are stored in `~/.config/agbplay`.
+
 ## Dependencies
 
-Package       | Debian/Ubuntu      | Arch          | MinGW
----           | ---                | ---           | ---
-argparse      | libargparse-dev    | argparse      | N/A (fetched via CMake)
-libfmt        | libfmt-dev         | fmt           | fmt
-nlohmann JSON | nlohmann-json3-dev | nlohmann-json | nlohmann-json
-Boost         | libboost-all-dev   | boost         | boost
-libzip        | libzip-dev         | libzip        | libzip
-zlib          | zlib1g-dev         | zlib          | zlib
-ncurses       | libncurses-dev     | ncurses       | N/A (curses UI not available)
-portaudio     | portaudio19-dev    | portaudio     | portaudio
-Qt6           | qt6-base-dev       | qt6-base      | qt6
+Package       | Debian/Ubuntu      | Arch          | MinGW                         | macOS (Homebrew)
+---           | ---                | ---           | ---                           | ---
+argparse      | libargparse-dev    | argparse      | N/A (fetched via CMake)       | argparse
+libfmt        | libfmt-dev         | fmt           | fmt                           | fmt
+nlohmann JSON | nlohmann-json3-dev | nlohmann-json | nlohmann-json                 | nlohmann-json
+Boost         | libboost-all-dev   | boost         | boost                         | boost
+libzip        | libzip-dev         | libzip        | libzip                        | libzip
+libsndfile    | libsndfile1-dev    | libsndfile    | libsndfile                    | libsndfile
+zlib          | zlib1g-dev         | zlib          | zlib                          | N/A (part of macOS)
+ncurses       | libncurses-dev     | ncurses       | N/A (curses UI not available) | N/A (part of macOS)
+portaudio     | portaudio19-dev    | portaudio     | portaudio                     | portaudio
+Qt6           | qt6-base-dev       | qt6-base      | qt6                           | qtbase
 
 Because the ncurses UI is not available on Windows, no package for MinGW is listed.
 The package names shown for MinGW are not exact and they need to be expanded to the following schema: `mingw-w64-$ARCH-$PACKAGE`.

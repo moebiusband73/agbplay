@@ -2,7 +2,7 @@
 
 #include "Resampler.hpp"
 
-#if __has_include(<immintrin.h>)
+#if __has_include(<immintrin.h>) && (defined(__x86_64__) || defined(__i386__) || defined(_M_X64) || defined(_M_IX86))
 
 #include <immintrin.h>
 

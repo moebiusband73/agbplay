@@ -26,6 +26,11 @@ configure_file(Version.hpp.in Version.hpp @ONLY)
 file(GLOB_RECURSE AGBPLAY_SOURCES "${CMAKE_CURRENT_LIST_DIR}/*.cpp")
 set(AGBPLAY_SOURCES_AVX2 ${AGBPLAY_SOURCES})
 list(FILTER AGBPLAY_SOURCES_AVX2 INCLUDE REGEX ".*AVX2\\.cpp")
+# AVX2 code paths are only available on x86 (e.g. not on Apple Silicon)
+if(NOT CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|AMD64|amd64|i[3-6]86|x86)$")
+    list(REMOVE_ITEM AGBPLAY_SOURCES ${AGBPLAY_SOURCES_AVX2})
+    set(AGBPLAY_SOURCES_AVX2 "")
+endif()
 
 add_library(agbplay SHARED ${AGBPLAY_SOURCES})
 
