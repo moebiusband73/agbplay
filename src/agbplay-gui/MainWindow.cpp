@@ -216,6 +216,8 @@ void MainWindow::SetupMenuBar()
 void MainWindow::SetupToolBar()
 {
     QToolBar *toolBar = addToolBar("Main Toolbar");
+    /* QToolBar applies its own icon size to every QToolButton added to it */
+    toolBar->setIconSize(QSize(32, 32));
 
     saveButton.setIcon(QIcon(":/icons/save-profile-large.ico"));
     saveButton.setFixedSize(32, 32);
